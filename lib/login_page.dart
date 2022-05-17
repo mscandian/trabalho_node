@@ -83,7 +83,7 @@ class ProdutosData {
     data['marca'] = this.marca;
     data['thumbnail'] = this.thumbnail;
   }
-/*
+
   void addData (Map<String, dynamic> responseMap) {
     this.id = responseMap["id"];
     this.descricao = responseMap["descricao"];
@@ -91,7 +91,7 @@ class ProdutosData {
     this.marca = responseMap["marca"];
     this.thumbnail = responseMap["thumbnail"];
   }
-*/
+
 }
 
 class _LoginPageState extends State<LoginPage> {
@@ -109,12 +109,16 @@ class _LoginPageState extends State<LoginPage> {
     final url = 'http://localhost:5000/seguranca/login';
     await http.post(Uri.parse(url), body: {'login': userData.login, 'senha': (userData.senha)})
     .then((response) {
+      print(response);
+      print(response.statusCode);
       Map<String, dynamic> responseMap = json.decode(response.body);
+      print(responseMap);
       if(response.statusCode == 200) {
         userData.addData(responseMap);
         globals.roles = userData.roles;
         globals.token = userData.token;
-        Navigator.push(
+        globals.userData = userData;
+        Navigator.push( 
           context,
           MaterialPageRoute(builder: (context) => ProdutosPage(userData)),
         );
@@ -130,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
   
-    @override
+  @override
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
     return Scaffold(
@@ -143,7 +147,16 @@ class _LoginPageState extends State<LoginPage> {
             children: <Widget>[
               TextFormField(
                 keyboardType: TextInputType.emailAddress, // Use email input type for emails.
-                decoration: const InputDecoration(hintText: 'Informe seu login', labelText: 'Login'),
+                decoration: const InputDecoration(
+                  hintText: 'Informe seu login', 
+                  labelText: 'Login'
+                ),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Campo login é obrigatório';
+                  }
+                  return null;
+                },                
                 onSaved: (String value) { this.userData.login = value; }
               ),
               TextFormField(
@@ -152,6 +165,12 @@ class _LoginPageState extends State<LoginPage> {
                   hintText: 'Informe sua senha',
                   labelText: 'Senha'
                 ),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Campo senha é obrigatório';
+                  }
+                  return null;
+                },                
                 onSaved: (String value) { this.userData.senha = value; }
               ),
               Container(

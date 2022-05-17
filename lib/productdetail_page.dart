@@ -1,7 +1,7 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:node_jwt_auth/login_page.dart';
+import 'package:node_jwt_auth/products_page.dart';
 import 'globals.dart' as globals;
 import 'package:http/http.dart' as http;
 
@@ -20,12 +20,12 @@ class _ProductDetailState extends State<ProductDetail> {
   String roles;
   String token;
 
-  TextEditingController descricaoController = TextEditingController();
-  TextEditingController marcaController = TextEditingController();
-  TextEditingController valorController = TextEditingController();
-  TextEditingController thumbnailController = TextEditingController();
+  final TextEditingController _descricaoController = TextEditingController();
+  final TextEditingController _marcaController = TextEditingController();
+  final TextEditingController _valorController = TextEditingController();
+  final TextEditingController _thumbnailController = TextEditingController();
 
-@override
+  @override
   void initState() {
     super.initState();
     produto = widget.produto;
@@ -34,175 +34,205 @@ class _ProductDetailState extends State<ProductDetail> {
     if (roles.contains('ADMIN')) {
       isAdmin = true;
     }
+    _descricaoController.text = produto.descricao;
+    _marcaController.text = produto.marca;
+    _valorController.text = produto.valor;
+    _thumbnailController.text = produto.thumbnail;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(onWillPop: _onBackPressed,
+    child: Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.redAccent,
         title: Text("Detalhe"),
       ),
       body: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.only(left: 130, top: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.only(left: 130, top: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      (produto.thumbnail != null) ?
+                      Image.network(produto.thumbnail, width: 100, height: 150, fit: BoxFit.cover) :
+                      Image(image: AssetImage('images/image_not_found.png'), width: 100, height: 150, fit: BoxFit.cover)
+                    ],
+                  )
+                ]
+              )
+            ),
+            Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Expanded(child: 
+                        Container( 
+                          child: Column(
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                                child: TextFormField(
+                                  controller: _descricaoController,
+                                  enabled: isAdmin,
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'Descrição', floatingLabelBehavior: FloatingLabelBehavior.always,
+                                  ),
+                                  onSaved: (text) {
+                                    _descricaoController.text = text;
+                                  }
+                                )
+                              ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                                child: TextFormField(
+                                  controller: _marcaController,
+                                  enabled: isAdmin,
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'Marca', floatingLabelBehavior: FloatingLabelBehavior.always,
+                                  ),
+                                  onSaved: (text) {
+                                    _marcaController.text = text;
+                                  }
+                                )
+                              ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                                child: TextFormField(
+                                  controller: _valorController,
+                                  enabled: isAdmin,
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'Valor', floatingLabelBehavior: FloatingLabelBehavior.always,
+                                  ),
+                                  onSaved: (text) {
+                                    _valorController.text = text;
+                                  },
+                                )
+                              ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                                child: TextFormField(
+                                  controller: _thumbnailController,
+                                  enabled: isAdmin,
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'Imagem', floatingLabelBehavior: FloatingLabelBehavior.always,
+                                  ),
+                                  onSaved: (text) {
+                                    _thumbnailController.text = text;
+                                  },
+                                )
+                              ),
+                            ]
+                          )
+                        )
+                      ),
+                    ]
+                  )
+                ]
+              )
+            ),            
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Image.network(produto.thumbnail, width: 100, height: 150, fit: BoxFit.cover)
-                      ],
-                    )])),
-                    Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[Row(
-                      children: <Widget>[
-          Expanded(child: Container( 
-            child: Column(
-              children: <Widget>[
-          Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-          child: TextFormField(
-            controller: descricaoController,
-            enabled: isAdmin,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Descrição', floatingLabelBehavior: FloatingLabelBehavior.always,
-              hintText: produto.descricao,
-            ),
-          )
-          ),
-           Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          child: TextFormField(
-            controller: marcaController,
-            enabled: isAdmin,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Marca', floatingLabelBehavior: FloatingLabelBehavior.always,
-              hintText: produto.marca,
-            ),
-          )
-          ),
-           Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          child: TextFormField(
-            controller: valorController,
-            enabled: isAdmin,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Valor', floatingLabelBehavior: FloatingLabelBehavior.always,
-            ),
-            onSaved: (text) {
-              valorController.text = text;
-            },
-          )
-          ),
-           Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          child: TextFormField(
-            controller: thumbnailController,
-            enabled: isAdmin,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Imagem', floatingLabelBehavior: FloatingLabelBehavior.always,
-              hintText: produto.thumbnail,
-            ),
-          )
-          ),
-              ]
-            ))),
-                      ]
-                      )
-                      ]
-                      )
+                    ElevatedButton(
+                      onPressed: isAdmin ? () => _editar() : null,
+                      style: ElevatedButton.styleFrom(
+                        elevation: 10,
+                        primary: Colors.blueAccent,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius:
+                            BorderRadius.all(
+                            Radius.circular(12.0)
+                          )
+                        ),
+                        minimumSize: Size(100, 40)
+                      ),
+                      child: const Text(
+                        'Alterar',
+                        style: TextStyle(fontSize: 18),
                       ),            
-  Center(
-  child:  Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                ElevatedButton(
-                  onPressed: isAdmin ? () => editar() : null,
-                   style: ElevatedButton.styleFrom(
-                     elevation: 10,
-                      primary: Colors.blueAccent,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius:
-                          BorderRadius.all(
-                            Radius.circular(12.0)
-                          )
-                      ),
-                      minimumSize: Size(100, 40)
                     ),
-                    child: Text(
-                      'Alterar',
-                      style: TextStyle(fontSize: 18),
-                    ),            
-                ),
-                 SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: isAdmin ? () => apagar() : null,
-                   style: ElevatedButton.styleFrom(
-                     elevation: 10,
-                      primary: Colors.blueAccent,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius:
-                          BorderRadius.all(
-                            Radius.circular(12.0)
-                          )
+                    SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: isAdmin ? () => _apagar() : null,
+                      style: ElevatedButton.styleFrom(
+                        elevation: 10,
+                        primary: Colors.blueAccent,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius:
+                            BorderRadius.all(
+                              Radius.circular(12.0)
+                            )
+                        ),
+                        minimumSize: Size(100, 40)
                       ),
-                      minimumSize: Size(100, 40)
-                    ),
-                    child: Text(
-                      'Apagar',
-                      style: TextStyle(fontSize: 18),
-                    ),                        
+                      child: const Text(
+                        'Apagar',
+                        style: TextStyle(fontSize: 18),
+                      ),                        
+                    )
+                  ]
                 )
-              ]
-            )
-          )
-]
-                      ));
-              
+              )
+            ]
+          ),
+        )
+      );        
   }
 
-  Future<void> editar() async {
+  Future<bool> _onBackPressed() async {
+    Navigator.push( 
+      context,
+      MaterialPageRoute(builder: (context) => ProdutosPage(globals.userData)),
+    );
+  }
+
+  Future<void> _editar() async {
     final url = 'http://localhost:5000/api/produtos/${produto.id}';
     await http.put(Uri.parse(url), headers: {
       'Content-Type': 'application/json',
       'Charset': 'utf-8',
       'Authorization': 'Bearer ${token}'},
       body: jsonEncode(<String, dynamic>{
-        'descricao': descricaoController.text.toString(),
-        'marca': marcaController.text.toString(),
-        'valor': valorController.text.toString(),
-        'thumbnail': thumbnailController.text.toString()
+        'descricao': _descricaoController.text.toString(),
+        'marca': _marcaController.text.toString(),
+        'valor': _valorController.text.toString(),
+        'thumbnail': _thumbnailController.text.toString()
       })
     )
     .then((response) {
-      print(valorController.text.toString());
       if (response.statusCode == 200) {
        ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          backgroundColor: Colors.blue,
-                          content: Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text('Registro alterado com sucesso!',
-                              style: TextStyle(fontSize: 14),
-                              ),
-                            ),
-                              duration: Duration(seconds: 2),
-                        )        
-       );}     
-    });
+        const SnackBar(
+          backgroundColor: Colors.blue,
+          content: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text(
+              'Registro alterado com sucesso!',
+              style: TextStyle(fontSize: 14),
+            ),
+          ),
+          duration: Duration(seconds: 2),
+        )        
+       );
+      }     
+    }
+    );
   }
 
-  Future<void> apagar() async {
+  Future<void> _apagar() async {
     final url = 'http://localhost:5000/api/produtos/${produto.id}';
     await http.delete(Uri.parse(url), headers: {
       'Content-Type': 'application/json',
@@ -211,27 +241,29 @@ class _ProductDetailState extends State<ProductDetail> {
     .then((response) {    
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          backgroundColor: Colors.blue,
-                          content: Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text('Registro removido com sucesso!',
-                              style: TextStyle(fontSize: 14),
-                              ),
-                            ),
-                              duration: Duration(seconds: 2),
-                        )
-        );}      
-  });
+          const SnackBar(
+            backgroundColor: Colors.blue,
+            content: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                'Registro removido com sucesso!',
+                style: TextStyle(fontSize: 14),
+              ),
+            ),
+            duration: Duration(seconds: 2),
+          )
+        );
+      }      
+    }
+    );
   }
 
   @override
-void dispose() {
-  // other dispose methods
-  descricaoController.dispose();
-  marcaController.dispose();
-  valorController.dispose();
-  thumbnailController.dispose();
-  super.dispose();
-}
+  void dispose() {
+    _descricaoController.dispose();
+    _marcaController.dispose();
+    _valorController.dispose();
+    _thumbnailController.dispose();
+    super.dispose();
+  }
 }

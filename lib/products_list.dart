@@ -25,7 +25,7 @@ class ListaProdutos extends StatelessWidget {
         child: Column(
           children: <Widget>[
             Expanded(
-              child: (result.thumbnail != null) ? Image(
+              child: (result.thumbnail != null && result.thumbnail.isNotEmpty) ? Image(
                 image: NetworkImage((result.thumbnail))) : Image(image: AssetImage('images/image_not_found.png'),
                 fit: BoxFit.cover,
               ),

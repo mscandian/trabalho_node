@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:node_jwt_auth/productdetail_page.dart';
 import 'package:node_jwt_auth/products_page.dart';
-import 'package:validate/validate.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:async';
-import 'dart:typed_data';
-import 'package:dio/dio.dart';
 import 'globals.dart' as globals;
 
 class LoginPage extends StatefulWidget {
@@ -20,7 +15,7 @@ AlertDialog getAlertDialog(title, content, context) {
     title: Text("Login failed"),
     content: Text('${content}'),
     actions: <Widget>[
-      FlatButton(
+      TextButton(
         child: Text('Close'),
         onPressed: () {
           Navigator.of(context).pop();
@@ -106,13 +101,10 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void login() async {
-    final url = 'http://localhost:5000/seguranca/login';
+    final url = 'https://trabalhofinal01.herokuapp.com/seguranca/login';
     await http.post(Uri.parse(url), body: {'login': userData.login, 'senha': (userData.senha)})
     .then((response) {
-      print(response);
-      print(response.statusCode);
       Map<String, dynamic> responseMap = json.decode(response.body);
-      print(responseMap);
       if(response.statusCode == 200) {
         userData.addData(responseMap);
         globals.roles = userData.roles;
@@ -124,13 +116,14 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
       else {
-        if(responseMap.containsKey("message"))
+        if(responseMap.containsKey("message")) {
           showDialog(context: context, builder: (BuildContext context) =>
-            getAlertDialog("Login failed", '${responseMap["message"]}', context));
+            getAlertDialog("Falha no login", '${responseMap["message"]}', context));
+        }
       }
     }).catchError((err) {
       showDialog(context: context, builder: (BuildContext context) =>
-        getAlertDialog("Login failed", '${err.toString()}', context));
+        getAlertDialog("Falha no login", '${err.toString()}', context));
     });
   }
   
@@ -146,7 +139,7 @@ class _LoginPageState extends State<LoginPage> {
           child: ListView(
             children: <Widget>[
               TextFormField(
-                keyboardType: TextInputType.emailAddress, // Use email input type for emails.
+                keyboardType: TextInputType.emailAddress, 
                 decoration: const InputDecoration(
                   hintText: 'Informe seu login', 
                   labelText: 'Login'
@@ -160,7 +153,7 @@ class _LoginPageState extends State<LoginPage> {
                 onSaved: (String value) { this.userData.login = value; }
               ),
               TextFormField(
-                obscureText: true, // To display typed char with *
+                obscureText: true, 
                 decoration: const InputDecoration(
                   hintText: 'Informe sua senha',
                   labelText: 'Senha'
@@ -175,10 +168,9 @@ class _LoginPageState extends State<LoginPage> {
               ),
               Container(
                 width: screenSize.width,
-                child: RaisedButton(
+                child: ElevatedButton(
                   child: Text('Login', style: TextStyle(color: Colors.white),),
                   onPressed: this.submit,
-                  color: Colors.blue,
                 ),
                 margin: EdgeInsets.only(top: 20.0),
               ),

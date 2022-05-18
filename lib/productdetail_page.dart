@@ -59,7 +59,7 @@ class _ProductDetailState extends State<ProductDetail> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      (produto.thumbnail != null) ?
+                      (produto.thumbnail != null && produto.thumbnail.isNotEmpty) ?
                       Image.network(produto.thumbnail, width: 100, height: 150, fit: BoxFit.cover) :
                       Image(image: AssetImage('images/image_not_found.png'), width: 100, height: 150, fit: BoxFit.cover)
                     ],
@@ -200,7 +200,7 @@ class _ProductDetailState extends State<ProductDetail> {
   }
 
   Future<void> _editar() async {
-    final url = 'http://localhost:5000/api/produtos/${produto.id}';
+    final url = 'https://trabalhofinal01.herokuapp.com/api/produtos/${produto.id}';
     await http.put(Uri.parse(url), headers: {
       'Content-Type': 'application/json',
       'Charset': 'utf-8',
@@ -233,7 +233,7 @@ class _ProductDetailState extends State<ProductDetail> {
   }
 
   Future<void> _apagar() async {
-    final url = 'http://localhost:5000/api/produtos/${produto.id}';
+    final url = 'https://trabalhofinal01.herokuapp.com/api/produtos/${produto.id}';
     await http.delete(Uri.parse(url), headers: {
       'Content-Type': 'application/json',
       'Charset': 'utf-8',

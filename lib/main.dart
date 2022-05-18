@@ -18,7 +18,7 @@ class _MyHomePageState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       routes: {
         '/': (context) => LoginPage(),
-      }
+      } 
     );
   }
 }

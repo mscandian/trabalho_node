@@ -146,7 +146,7 @@ class _AddItemState extends State<AddItem> {
   }
 
   Future<void> _adicionar() async {
-    final url = 'http://localhost:5000/api/produtos/';
+    final url = 'https://trabalhofinal01.herokuapp.com/api/produtos/';
     await http.post(Uri.parse(url), headers: {
       'Content-Type': 'application/json',
       'Charset': 'utf-8',

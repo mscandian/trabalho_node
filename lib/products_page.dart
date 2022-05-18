@@ -8,6 +8,7 @@ import 'package:node_jwt_auth/products_list.dart';
 class ProdutosPage extends StatefulWidget {
   UserData userData;
   ProdutosPage(@required this.userData);
+
   @override
   State<StatefulWidget> createState() =>  _ProdutosPageState(userData);
 }
@@ -96,13 +97,20 @@ class _ProdutosPageState extends State<ProdutosPage> {
                       itemBuilder: (_, index) {
                         return ListaProdutos(result: produtos[index]);
                       }
-                    ))])),
-                    floatingActionButton: FloatingActionButton(
-                      onPressed:  isAdmin? () => _addItem() : null,
-                      tooltip: 'Adicionar Produto',
-                      child: const Icon(Icons.add)
                     )
-          );
+                  )
+                ]
+              )
+            ),
+            floatingActionButton: Visibility(
+              visible: isAdmin,
+              child: FloatingActionButton(
+                onPressed:  isAdmin? () => _addItem() : null,
+                tooltip: 'Adicionar Produto',
+                child: const Icon(Icons.add)
+              )
+            ),
+        );
   }
 
   Future<void> _addItem() {
@@ -118,7 +126,7 @@ class _ProdutosPageState extends State<ProdutosPage> {
 
   Future<List<ProdutosData>> _getServerData() async {
     if (_searchTextController.text == null || _searchTextController.text == '') {
-    final url = 'http://localhost:5000/api/produtos';
+    final url = 'https://trabalhofinal01.herokuapp.com/api/produtos';
     var response = await http.get(Uri.parse(url), headers: {
       'Content-Type': 'application/json',
       'Charset': 'utf-8',
@@ -131,7 +139,7 @@ class _ProdutosPageState extends State<ProdutosPage> {
       }
     });
   } else {
-    final url = 'http://localhost:5000/api/produtos/${_searchTextController.text}';
+    final url = 'https://trabalhofinal01.herokuapp.com/api/produtos/${_searchTextController.text}';
     var response = await http.get(Uri.parse(url), headers: {
       'Content-Type': 'application/json',
       'Charset': 'utf-8',
